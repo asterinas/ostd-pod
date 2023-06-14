@@ -61,7 +61,7 @@ macro_rules! impl_pod_for {
     };
 }
 // impl Pod for primitive types
-impl_pod_for!(u8, u16, u32, u64, i8, i16, i32, i64, isize, usize);
+impl_pod_for!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, isize, usize);
 // impl Pod for array
 unsafe impl<T: Pod, const N: usize> Pod for [T; N] {}
 
