@@ -29,7 +29,7 @@ fn expand_derive_pod(input: DeriveInput) -> TokenStream {
     match input.data {
         Data::Struct(data_struct) => impl_pod_for_struct(data_struct, generics, ident, attrs),
         Data::Union(data_union) => impl_pod_for_union(data_union, generics, ident, attrs),
-        Data::Enum(data_enum) => impl_pod_for_enum(data_enum, attrs, generics, ident),
+        Data::Enum(_) => panic!("Trying to derive `Pod` trait for enum may be unsound. Use `TryFromInt` instead."),
     }
 }
 
@@ -110,34 +110,6 @@ fn impl_pod_for_union(
             #[automatically_derived]
             unsafe impl #impl_generics ::pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
-    }
-}
-
-fn impl_pod_for_enum(
-    data_enum: DataEnum,
-    attrs: Vec<Attribute>,
-    generics: Generics,
-    ident: Ident,
-) -> TokenStream {
-    if !has_valid_repr(attrs) {
-        panic!(
-            "{} does not have invalid repr to implement Pod.",
-            ident.to_string()
-        );
-    }
-
-    // check variant
-    for variant in data_enum.variants {
-        if None == variant.discriminant {
-            panic!("Enum can only have fields like Variant=1");
-        }
-    }
-
-    // deal with generics
-    let (impl_generics, type_generics, where_clause) = generics.split_for_impl();
-    quote! {
-        #[automatically_derived]
-        unsafe impl #impl_generics ::pod::Pod #type_generics for #ident #where_clause {}
     }
 }
 
