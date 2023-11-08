@@ -66,12 +66,12 @@ fn impl_pod_for_struct(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod #type_generics for #ident where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod #type_generics for #ident #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
@@ -103,12 +103,12 @@ fn impl_pod_for_union(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod #type_generics for #ident where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod #type_generics for #ident #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
