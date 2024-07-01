@@ -1,4 +1,4 @@
-use pod::Pod;
+use pod_rs::Pod;
 
 #[test]
 fn derive_const_generic() {

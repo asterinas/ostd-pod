@@ -1,3 +1,5 @@
+//! This crate defines a marker trait for plain old data (POD).
+
 #![no_std]
 
 use core::mem::MaybeUninit;

@@ -1,17 +1,26 @@
-//! This crate is used to provide a procedural macro to derive Pod trait defined in framework/pod.
-//! When use this crate, framework/pod should also be added as a dependency.
-//! This macro should only be used outside
-//! When derive Pod trait, we will do a check whether the derive is safe since Pod trait is an unsafe trait.
-//! For struct, we will check that the struct has valid repr (e.g,. repr(C), repr(u8)), and each field is Pod type.
-//! For union and enum, we only check the valid repr.
+//! This crate provides a procedural macro for deriving the `Pod` trait defined in `pod-rs`.
 
 use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 use syn::{
-    parse_macro_input, Attribute, Data, DataEnum, DataStruct, DataUnion, DeriveInput, Fields,
+    parse_macro_input, Attribute, Data, DataStruct, DataUnion, DeriveInput, Fields,
     Generics,
 };
 
+/// Deriving [`Pod`] trait for a struct or union. 
+///
+/// When deriving the `Pod` trait,
+/// this macro performs a safety check because the `Pod` trait is marked as unsafe.
+/// For structs and unions, 
+/// the macro checks that the struct has a valid repr attribute (e.g., `repr(C)`, `repr(u8)`),
+/// and each field is of `Pod` type.
+/// Enums cannot implement the `Pod` trait.
+/// 
+/// If you want to implement `Pod` 
+/// for a struct or union with fields that are not of Pod type,
+/// you can implement it unsafely and perform the necessary checks manually.
+/// 
+/// [`Pod`]: https://docs.rs/pod-rs/latest/pod_rs/trait.Pod.html
 #[proc_macro_derive(Pod)]
 pub fn derive_pod(input_token: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input_token as DeriveInput);
@@ -57,7 +66,7 @@ fn impl_pod_for_struct(
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::pod::Pod
+                #field_ty: ::pod_rs::Pod
             }
         })
         .collect::<Vec<_>>();
@@ -66,12 +75,12 @@ fn impl_pod_for_struct(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
@@ -94,7 +103,7 @@ fn impl_pod_for_union(
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::pod::Pod
+                #field_ty: ::pod_rs::Pod
             }
         })
         .collect::<Vec<_>>();
@@ -103,12 +112,12 @@ fn impl_pod_for_union(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
