@@ -1,6 +1,6 @@
 [package]
-name = "pod-derive"
-version = "0.1.1"
+name = "ostd-pod-derive"
+version = "0.1.0"
 edition = "2021"
 description = "The derive proc macro crate for pod-rs"
 license = "MPL-2.0"

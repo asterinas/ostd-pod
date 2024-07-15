@@ -68,4 +68,4 @@ impl_pod_for!(u8, u16, u32, u64, u128, i8, i16, i32, i64, i128, isize, usize);
 unsafe impl<T: Pod, const N: usize> Pod for [T; N] {}
 
 #[cfg(feature = "derive")]
-pub use pod_derive::*;
+pub use ostd_pod_derive::*;

@@ -20,7 +20,7 @@ use syn::{
 /// for a struct or union with fields that are not of Pod type,
 /// you can implement it unsafely and perform the necessary checks manually.
 /// 
-/// [`Pod`]: https://docs.rs/pod-rs/latest/pod_rs/trait.Pod.html
+/// [`Pod`]: https://docs.rs/pod-rs/latest/ostd_pod/trait.Pod.html
 #[proc_macro_derive(Pod)]
 pub fn derive_pod(input_token: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = parse_macro_input!(input_token as DeriveInput);
@@ -66,7 +66,7 @@ fn impl_pod_for_struct(
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::pod_rs::Pod
+                #field_ty: ::ostd_pod::Pod
             }
         })
         .collect::<Vec<_>>();
@@ -75,12 +75,12 @@ fn impl_pod_for_struct(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
@@ -103,7 +103,7 @@ fn impl_pod_for_union(
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::pod_rs::Pod
+                #field_ty: ::ostd_pod::Pod
             }
         })
         .collect::<Vec<_>>();
@@ -112,12 +112,12 @@ fn impl_pod_for_union(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::pod_rs::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
