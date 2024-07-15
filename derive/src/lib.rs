@@ -61,12 +61,14 @@ fn impl_pod_for_struct(
     // deal with generics
     let (impl_generics, type_generics, where_clause) = generics.split_for_impl();
 
+    let trait_tokens = pod_trait_tokens();
+
     let pod_where_predicates = fields
         .into_iter()
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::ostd_pod::Pod
+                #field_ty: #trait_tokens
             }
         })
         .collect::<Vec<_>>();
@@ -75,12 +77,12 @@ fn impl_pod_for_struct(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics #trait_tokens for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics #trait_tokens for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
@@ -98,12 +100,13 @@ fn impl_pod_for_union(
     // deal with generics
     let (impl_generics, type_generics, where_clause) = generics.split_for_impl();
 
+    let trait_tokens = pod_trait_tokens();
     let pod_where_predicates = fields
         .into_iter()
         .map(|field| {
             let field_ty = field.ty;
             quote! {
-                #field_ty: ::ostd_pod::Pod
+                #field_ty: #trait_tokens
             }
         })
         .collect::<Vec<_>>();
@@ -112,12 +115,12 @@ fn impl_pod_for_union(
     if where_clause.is_none() {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics where #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics #trait_tokens for #ident #type_generics where #(#pod_where_predicates),* {}
         }
     } else {
         quote! {
             #[automatically_derived]
-            unsafe impl #impl_generics ::ostd_pod::Pod for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
+            unsafe impl #impl_generics #trait_tokens for #ident #type_generics #where_clause, #(#pod_where_predicates),* {}
         }
     }
 }
@@ -144,4 +147,20 @@ fn has_valid_repr(attrs: Vec<Attribute>) -> bool {
         }
     }
     false
+}
+
+fn pod_trait_tokens() -> TokenStream {
+    let package_name = std::env::var("CARGO_PKG_NAME").unwrap();
+
+    // Only `ostd` and the unit test in `ostd-pod` depend on `Pod` fro `ostd-pod`,
+    // other crates depend on `Pod` re-exported from ostd.
+    if package_name.as_str() == "ostd" || package_name.as_str() == "ostd-pod" {
+        quote! {
+            ::ostd_pod::Pod
+        }
+    } else {
+        quote! {
+            ::ostd::Pod
+        }
+    }
 }

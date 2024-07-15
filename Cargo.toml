@@ -1,6 +1,6 @@
 [package]
 name = "ostd-pod"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MPL-2.0"
 description = "A marker trait for plain old data (POD)"
@@ -10,7 +10,7 @@ repository = "https://github.com/asterinas/pod"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-ostd-pod-derive = { path = "derive", optional = true, version = "0.1.0" }
+ostd-pod-derive = { path = "derive", optional = true, version = "0.1.1" }
 
 [features]
 default = ["derive"]
